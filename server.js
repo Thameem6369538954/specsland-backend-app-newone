@@ -9,6 +9,10 @@ confiq.config({ path: path.join(__dirname, 'Config/config.env'),});
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the API!"); // A simple response for the root URL
+});
+
 const product = require("./Routes/Productroutes");
 app.use("/api/v1/", product);
 
