@@ -11,8 +11,9 @@ confiq.config({ path: path.join(__dirname, 'Config/config.env'),});
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000",
-      'https://specsland-backend.onrender.com',
+    origin: [
+      "http://localhost:5173/",
+      "https://specsland-backend.onrender.com",
     ],
 
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
