@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173/",
-      "https://specsland-backend.onrender.com",
+      // "https://specsland-backend.onrender.com",
     ],
 
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
