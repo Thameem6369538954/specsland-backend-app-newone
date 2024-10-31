@@ -5,12 +5,13 @@ const Product = require("../Models/Createproduct.js")
 exports.getProducts = async (req, res) => {
 
     const getProducts =  await Product.find();
+    console.log(getProducts);
+    
     res.status(200).json({
         success: true,
         status: "success get data",
-        data: {
-            data: getProducts
-        }
+        data:getProducts
+        
         
     })
 }

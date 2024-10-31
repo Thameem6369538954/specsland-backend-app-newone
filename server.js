@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173/",
+      "http://http://localhost:5173/",
       // "https://specsland-backend.onrender.com",
     ],
 
