@@ -10,10 +10,8 @@ exports.getProducts = async (req, res) => {
     res.status(200).json({
         success: true,
         status: "success get data",
-        data:getProducts
-        
-        
-    })
+        getProducts
+      })
 }
 
 // Create Product --> /api/v1/product

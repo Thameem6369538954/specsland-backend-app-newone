@@ -12,8 +12,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://http://localhost:5173/",
-      // "https://specsland-backend.onrender.com",
+      "http://localhost:5173",
     ],
 
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
@@ -24,7 +23,9 @@ app.use(
 app.get("/", (req, res) => {
   res.send("Welcome to the API!"); // A simple response for the root URL
 });
-
+app.get("/testcors", (req, res) => {
+  res.json({ message: "CORS is working!" });
+});
 const product = require("./Routes/Productroutes");
 app.use("/api/v1/", product);
 
