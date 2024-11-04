@@ -4,11 +4,16 @@ const gentrateToken = require("../Utils/gentrateToken.js");
 
 exports.createUser = async (req, res) => {
   const { username, email, password, confrimPassword, mobileNumber } = req.body;
+  
+   if (!password) {
+     return res.status(400).json({ error: "Password is required" });
+   }
 
   try {
     // Check if user email or username already exists
     const userMailexist = await User.findOne({ email });
     const userNameexist = await User.findOne({ username });
+
 
     if (userMailexist || userNameexist) {
       return res.status(400).json({
