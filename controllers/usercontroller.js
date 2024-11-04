@@ -3,7 +3,21 @@ const bcrypt = require("bcryptjs");
 const gentrateToken = require("../Utils/gentrateToken.js");
 
 exports.createUser = async (req, res) => {
+
+  const createuser = await User.create(req.body);
+
+  res.status(201).json({  
+    status: "success",
+    data: {
+      data: createuser,
+    },  
+
+  });
+
   const { username, email, password, confrimPassword, mobileNumber } = req.body;
+
+  console.log(req.body, "req.body");
+  
 
    if (!password) {
      return res.status(400).json({ error: "Password is required" });
@@ -36,6 +50,7 @@ if (password !== confrimPassword) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+
     // Create new user
     const newUser = new User({
       username,
@@ -43,7 +58,9 @@ if (password !== confrimPassword) {
       password: hashedPassword,
       confrimPassword,
       mobileNumber,
+      
     });
+    console.log(newUser);
 
     // Save the new user to the database
     await newUser.save();
