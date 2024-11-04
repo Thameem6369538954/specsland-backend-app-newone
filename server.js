@@ -27,7 +27,9 @@ app.get("/testcors", (req, res) => {
   res.json({ message: "CORS is working!" });
 });
 const product = require("./Routes/Productroutes");
+const user = require("./Routes/userrouter.js")
 app.use("/api/v1/", product);
+app.use("/api/v1/", user);
 
 
 connectDb();
