@@ -14,6 +14,7 @@ const gentrateToken = (id, statusCode, res) => {
     res.status(statusCode).json({
         success: true,
         token,
+        message: "User Registered successfully",
     });
 };
 
