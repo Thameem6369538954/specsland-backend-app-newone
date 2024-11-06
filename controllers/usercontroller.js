@@ -99,6 +99,17 @@ exports.loginUser = async (req, res) => {
 
         console.log(user, "user");
         
+        res.status(200).json({
+            success: true,
+            message: "User Logged in successfully",
+            data: user,
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            mobileNumber: user.mobileNumber,
+            token: user.token,
+            status: "success",
+        });
         
         if (!user) {
             return res.status(404).json({
