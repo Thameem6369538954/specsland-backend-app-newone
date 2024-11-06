@@ -101,29 +101,21 @@ if (password !== confrimPassword) {
 
 
 exports.loginUser = async (req, res) => {
-    const { email, password, } = req.body;
-
+    const { email, password } = req.body;
+    
 
     try {
         // Use `User` instead of `user` here
         const user = await User.findOne({ email });
 
         console.log(user, "user");
-        
-       const token = gentrateToken(user._id);
+        const token = gentrateToken(user._id);
 
-       // Send response with token
         res.status(200).json({
-         success: true,
-         message: "User logged in successfully",
-         token: token, // Include the token here
-         user: {
-           _id: user._id,
-           username: user.username,
-           email: user.email,
-           mobileNumber: user.mobileNumber,
-         },
-       });
+          success: true,
+          message: "User Logged..............!!!!!!!!!!!!!!!  kadavule ajitheeeeeeeeeeeeee in successfully",
+          token: token,
+        });
         
         if (!user) {
             return res.status(404).json({
