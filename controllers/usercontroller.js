@@ -133,13 +133,13 @@ exports.loginUser = async (req, res) => {
     }
 
     // Generate token
-    const token = generateToken(user._id);
+    // const token = generateToken(user._id);
 
     // Return success response with token
     return res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      token: token,
+      // token: token,
     });
   } catch (error) {
     console.error("Error during login:", error.message, error.stack);
