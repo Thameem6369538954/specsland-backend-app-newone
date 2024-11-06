@@ -101,7 +101,8 @@ if (password !== confrimPassword) {
 
 
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, } = req.body;
+
 
     try {
         // Use `User` instead of `user` here
@@ -109,11 +110,20 @@ exports.loginUser = async (req, res) => {
 
         console.log(user, "user");
         
-        res.status(200).json({
-          success: true,
-          message: "User Logged..............!!!!!!!!!!!!!!! in successfully",
-          token: user.token,
-        });
+       const token = gentrateToken(user._id);
+
+       // Send response with token
+       return res.status(200).json({
+         success: true,
+         message: "User logged in successfully",
+         token: token, // Include the token here
+         user: {
+           _id: user._id,
+           username: user.username,
+           email: user.email,
+           mobileNumber: user.mobileNumber,
+         },
+       });
         
         if (!user) {
             return res.status(404).json({
