@@ -80,6 +80,16 @@ if (password !== confrimPassword) {
       mobileNumber: newUser.mobileNumber,
     });
     */
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      _id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      mobileNumber: newUser.mobileNumber,
+      token : newUser.token
+    })
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -101,12 +111,7 @@ exports.loginUser = async (req, res) => {
         
         res.status(200).json({
             success: true,
-            message: "User Logged in successfully",
-            data: user,
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            mobileNumber: user.mobileNumber,
+            message: "User Logged.............. in successfully",
             token: user.token,
             status: "success",
         });
