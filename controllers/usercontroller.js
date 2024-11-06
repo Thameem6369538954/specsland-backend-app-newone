@@ -101,45 +101,39 @@ if (password !== confrimPassword) {
 
 
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    
+  const { email, password } = req.body;
 
-    try {
-        // Use `User` instead of `user` here
-        const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-        console.log(user, "user");
-        const token = gentrateToken(user._id);
-
-        res.status(200).json({
-          success: true,
-          message: "User Logged..............!!!!!!!!!!!!!!!  kadavule ajitheeeeeeeeeeeeee in successfully",
-          token: token,
-        });
-        
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        
-        if (!isMatch) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid credentials"
-            });
-        }
-
-        // Assuming gentrateToken is a function that generates a token
-        gentrateToken(user._id, 200, res);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "vanakam da mapla"
-        });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    const token = gentrateToken(user._id);
+    return res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      token: token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred during login",
+    });
+  }
 };
+
