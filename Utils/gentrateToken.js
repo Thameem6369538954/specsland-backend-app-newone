@@ -15,6 +15,9 @@ const gentrateToken = (id, statusCode, res) => {
         success: true,
         token,
         message: "User Registered successfully",
+        message: "User Logged in successfully",
+        data: user,
+        // status: "success",
     });
 };
 

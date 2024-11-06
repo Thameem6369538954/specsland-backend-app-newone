@@ -54,7 +54,7 @@ if (password !== confrimPassword) {
     // Create new user
     const newUser = new User({
       username,
-      email,
+      email,  
       password: hashedPassword,
       confrimPassword,
       mobileNumber,
@@ -96,6 +96,9 @@ exports.loginUser = async (req, res) => {
     try {
         // Use `User` instead of `user` here
         const user = await User.findOne({ email });
+
+        console.log(user, "user");
+        
         
         if (!user) {
             return res.status(404).json({
