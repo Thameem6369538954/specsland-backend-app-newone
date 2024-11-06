@@ -120,6 +120,7 @@ exports.loginUser = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+
       });
     }
 
@@ -138,9 +139,11 @@ exports.loginUser = async (req, res) => {
     // Return success response with token
     return res.status(200).json({
       success: true,
-      message: "User logged in successfully",
+      message: "User logged in successfully,,,,,,,,,,,,,,,,,,,,,,,,,",
+      data: user,
       // token: token,
     });
+    
   } catch (error) {
     console.error("Error during login:", error.message, error.stack);
     return res.status(500).json({
