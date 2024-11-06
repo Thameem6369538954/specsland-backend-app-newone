@@ -103,9 +103,19 @@ if (password !== confrimPassword) {
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and password are required",
+    });
+  }
+
   try {
+    // Find user by email
     const user = await User.findOne({ email });
 
+    // Check if user exists
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -113,8 +123,8 @@ exports.loginUser = async (req, res) => {
       });
     }
 
+    // Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -122,14 +132,17 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    const token = gentrateToken(user._id);
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Return success response with token
     return res.status(200).json({
       success: true,
       message: "User logged in successfully",
       token: token,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error during login:", error.message, error.stack);
     return res.status(500).json({
       success: false,
       message: "An error occurred during login",
