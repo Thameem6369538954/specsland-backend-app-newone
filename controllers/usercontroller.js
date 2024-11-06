@@ -113,7 +113,7 @@ exports.loginUser = async (req, res) => {
        const token = gentrateToken(user._id);
 
        // Send response with token
-       return res.status(200).json({
+        res.status(200).json({
          success: true,
          message: "User logged in successfully",
          token: token, // Include the token here

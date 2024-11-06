@@ -6,8 +6,9 @@ const { connect } = require('http2');
 const connectDb = require('./Config/DBconnection');
 const cors = require('cors')
 confiq.config({ path: path.join(__dirname, 'Config/config.env'),});
+const cookieParser = require("cookie-parser");
 
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
