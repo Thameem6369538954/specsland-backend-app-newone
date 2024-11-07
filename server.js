@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: ["http://localhost:5173",
-       "https://specsland-app.vercel.app/"],
+       "https://specsland-app.vercel.app"],
 
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
     credentials: true, // Allow cookies if needed
