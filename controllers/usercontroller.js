@@ -72,9 +72,8 @@ if (password !== confrimPassword) {
     res.status(201).json({
       success: true,
       data: newUser,
-      message: "User created successfully.............salma",
+      message: "User Registered successfully",
       token: gentrateToken(newUser._id, 201, res),
-
     });
 
   
