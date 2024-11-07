@@ -120,7 +120,6 @@ exports.loginUser = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
-
       });
     }
 
@@ -133,17 +132,16 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Generate token
-    // const token = generateToken(user._id);
-
-    // Return success response with token
-    return res.status(200).json({
+    // Generate token and send response
+    res.status(200).json({
       success: true,
-      message: "User logged in successfully,,,,,,,,,,,,,,,,,,,,,,,,,",
-      data: user,
-      // token: token,
-    });
-    
+      message: "User logged in successfully...........da",
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      mobileNumber: user.mobileNumber,
+    })
+    gentrateToken(user._id, 200, res);
   } catch (error) {
     console.error("Error during login:", error.message, error.stack);
     return res.status(500).json({
@@ -152,4 +150,5 @@ exports.loginUser = async (req, res) => {
     });
   }
 };
+
 
