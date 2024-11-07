@@ -132,15 +132,7 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Generate token and send response
-    res.status(200).json({
-      success: true,
-      message: "User logged in successfully...........da",
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      mobileNumber: user.mobileNumber,
-    })
+    // Generate token and send response through gentrateToken
     gentrateToken(user._id, 200, res);
   } catch (error) {
     console.error("Error during login:", error.message, error.stack);
