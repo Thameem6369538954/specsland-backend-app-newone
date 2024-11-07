@@ -132,8 +132,18 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Generate token and send response through gentrateToken
-    gentrateToken(user._id, 200, res);
+    // Generate token
+    const token = gentrateToken(user._id);
+
+    // Return the user data and token in the response
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        user, // User data (e.g., username, email)
+        token, // Generated token
+      },
+    });
   } catch (error) {
     console.error("Error during login:", error.message, error.stack);
     return res.status(500).json({
@@ -142,5 +152,6 @@ exports.loginUser = async (req, res) => {
     });
   }
 };
+
 
 
