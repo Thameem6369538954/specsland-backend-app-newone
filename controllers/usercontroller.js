@@ -82,6 +82,8 @@ if (password !== confrimPassword) {
     return res.status(500).json({
       success: false,
       message: error.message,
+      
+      
     });
   }
 };
