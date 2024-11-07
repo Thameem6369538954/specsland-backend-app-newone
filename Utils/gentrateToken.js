@@ -15,10 +15,7 @@ const generateToken = (id, statusCode, res) => {
   });
 
   // Send a response (success message)
-  res.status(statusCode).json({
-    success: true,
-    message: "User Logged in successfully", // Change to relevant message if needed
-  });
+
 
   return token;
 };

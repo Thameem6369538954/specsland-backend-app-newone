@@ -1,6 +1,7 @@
 const User = require("../Models/Usermodels.js");
 const bcrypt = require("bcryptjs");
-const generateToken = require("../Utils/gentrateToken.js");
+const gentrateToken = require("../Utils/gentrateToken.js");
+
 exports.getUser = async (req, res) => {
   try {
     const users = await User.find();
@@ -68,27 +69,15 @@ if (password !== confrimPassword) {
     // Generate token and send response
     gentrateToken(newUser._id, 201, res);
 
-    // If `gentrateToken` doesn’t send a response, uncomment the following code:
-    /*
-    return res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      _id: newUser._id,
-      username: newUser.username,
-      email: newUser.email,
-      mobileNumber: newUser.mobileNumber,
-    });
-    */
-
     res.status(201).json({
       success: true,
-      message: "User created successfully",
-      _id: newUser._id,
-      username: newUser.username,
-      email: newUser.email,
-      mobileNumber: newUser.mobileNumber,
-      token : newUser.token
-    })
+      data: newUser,
+      message: "User created successfully.............salma",
+      token: gentrateToken(newUser._id, 201, res),
+
+    });
+
+  
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -100,55 +89,29 @@ if (password !== confrimPassword) {
 
 
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  // Check if email and password are provided
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Email and password are required",
-    });
-  }
-
   try {
-    // Find the user by email
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Compare the provided password with the stored hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Generate the token
-    const token = generateToken(user._id, 200, res);
+    // Generate token and set cookie
+    const token = gentrateToken(user._id, 200, res);
 
-    // Send the response with user and token
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      data: {
-        user, // Send the user data
-        token, // Send the token here
-      },
-    });
+    return res.status(200).json({ message: "Login successful",data:user, token });
   } catch (error) {
-    console.error("Error during login:", error.message, error.stack);
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred during login",
-    });
+    console.error("Error during login:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 
