@@ -1,24 +1,26 @@
 const JWT = require("jsonwebtoken");
 
-const gentrateToken = (id, statusCode, res) => {
-    const token = JWT.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-    });
+const generateToken = (id, statusCode, res) => {
+  // Create the JWT token
+  const token = JWT.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "1d", // Token expires in 1 day
+  });
 
-    res.cookie("jwt", token, {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: "none",
-        secure: process.env.NODE_ENV === "development" ? false : true,
-    })
-    res.status(statusCode).json({
-        success: true,
-        token,
-        message: "User Registered successfully.....!",
-        // message: "User Logged in successfully",
-        // data: user,
-        // status: "success",
-    });
+  // Set the token in an HttpOnly cookie
+  res.cookie("jwt", token, {
+    maxAge: 24 * 60 * 60 * 1000, // Cookie expires in 1 day
+    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+    sameSite: "none", // Necessary for cross-origin requests
+    secure: process.env.NODE_ENV === "development" ? false : true, // Only send cookie over HTTPS in production
+  });
+
+  // Send a response (success message)
+  res.status(statusCode).json({
+    success: true,
+    message: "User Logged in successfully", // Change to relevant message if needed
+  });
+
+  return token;
 };
 
-module.exports = gentrateToken;
+module.exports = generateToken;

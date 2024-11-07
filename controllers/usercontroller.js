@@ -1,7 +1,6 @@
 const User = require("../Models/Usermodels.js");
 const bcrypt = require("bcryptjs");
-const gentrateToken = require("../Utils/gentrateToken.js");
-
+const generateToken = require("../Utils/gentrateToken.js");
 exports.getUser = async (req, res) => {
   try {
     const users = await User.find();
@@ -112,10 +111,9 @@ exports.loginUser = async (req, res) => {
   }
 
   try {
-    // Find user by email
+    // Find the user by email
     const user = await User.findOne({ email });
 
-    // Check if user exists
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -123,7 +121,7 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Check if password matches
+    // Compare the provided password with the stored hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
@@ -132,16 +130,16 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Generate token
-    const token = gentrateToken(user._id);
+    // Generate the token
+    const token = generateToken(user._id, 200, res);
 
-    // Return the user data and token in the response
+    // Send the response with user and token
     res.status(200).json({
       success: true,
       message: "Login successful",
       data: {
-        user, // User data (e.g., username, email)
-        token, // Generated token
+        user, // Send the user data
+        token, // Send the token here
       },
     });
   } catch (error) {
@@ -152,6 +150,5 @@ exports.loginUser = async (req, res) => {
     });
   }
 };
-
 
 
