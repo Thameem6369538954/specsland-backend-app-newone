@@ -128,6 +128,8 @@ exports.updateProfile = async (req, res) => {
     const { id } = req.params;
     const { username, email, password, confirmPassword, mobileNumber, gender } =
       req.body;
+    console.log("ID:", req.params.id); // Log ID
+    console.log("Request Body:", req.body); // Log form data
 
     // Check if the password and confirmPassword match
     if (password !== confirmPassword) {
@@ -140,6 +142,7 @@ exports.updateProfile = async (req, res) => {
     if (username) updateFields.username = username;
     if (email) updateFields.email = email;
     if (mobileNumber) updateFields.mobileNumber = mobileNumber;
+    if(password) updateFields.password = password;
     if (gender) updateFields.gender = gender;
 
     // If the password is provided, hash it before updating
