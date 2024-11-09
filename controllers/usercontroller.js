@@ -128,6 +128,7 @@ exports.updateProfile = async (req, res) => {
     const { id } = req.params;
     const { username, email, password, confirmPassword, mobileNumber, gender } =
       req.body;
+
     console.log("ID:", req.params.id); // Log ID
     console.log("Request Body:", req.body); // Log form data
 
@@ -136,34 +137,29 @@ exports.updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    // Prepare the updateFields object
-    const updateFields = {};
+    // Find the user by ID first
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    if (username) updateFields.username = username;
-    if (email) updateFields.email = email;
-    if (mobileNumber) updateFields.mobileNumber = mobileNumber;
-    // if(password) updateFields.password = password;
-    if (gender) updateFields.gender = gender;
+    // Prepare the updateFields object
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (mobileNumber) user.mobileNumber = mobileNumber;
+    if (gender) user.gender = gender;
 
     // If the password is provided, hash it before updating
     if (password) {
       const salt = await bcrypt.genSalt(10); // Generate salt
-      updateFields.password = await bcrypt.hash(password, salt); // Hash the password
+      user.password = await bcrypt.hash(password, salt); // Hash the password
     }
 
-    // Find the user by ID and update the fields
-    const updatedUser = await User.findByIdAndUpdate(id, updateFields, {
-      new: true,
-      runValidators: true,
-    });
-   await updatedUser.save();
-    // If no user is found, return 404
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    // Save the updated user
+    await user.save(); // This will trigger the password hashing if modified
 
     // Return the updated user (excluding the password)
-    const { password: _, ...userData } = updatedUser.toObject(); // Remove the password from the response
+    const { password: _, ...userData } = user.toObject(); // Remove the password from the response
 
     return res.status(200).json({
       message: "Profile updated successfully",
@@ -174,5 +170,6 @@ exports.updateProfile = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
