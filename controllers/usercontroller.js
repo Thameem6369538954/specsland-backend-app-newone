@@ -125,78 +125,46 @@ exports.userlogout = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const {
-      username,
-      email,
-      mobileNumber,
-      gender,
-      currentPassword,
-      newPassword,
-      confirmPassword,
-    } = req.body;
+    const { id } = req.params;
+    const { username, email, password, confirmPassword, mobileNumber, gender } =
+      req.body;
 
-    // Find the user by ID
-    const user = await User.findById(req.params.id);
-    if (!user) {
+    // Check if the password and confirmPassword match
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Prepare the updateFields object
+    const updateFields = {};
+
+    if (username) updateFields.username = username;
+    if (email) updateFields.email = email;
+    if (mobileNumber) updateFields.mobileNumber = mobileNumber;
+    if (gender) updateFields.gender = gender;
+
+    // If the password is provided, hash it before updating
+    if (password) {
+      const salt = await bcrypt.genSalt(10); // Generate salt
+      updateFields.password = await bcrypt.hash(password, salt); // Hash the password
+    }
+
+    // Find the user by ID and update the fields
+    const updatedUser = await User.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
+
+    // If no user is found, return 404
+    if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let isUpdated = false;
+    // Return the updated user (excluding the password)
+    const { password: _, ...userData } = updatedUser.toObject(); // Remove the password from the response
 
-    // Update fields if provided
-    if (username && username !== user.username) {
-      user.username = username;
-      isUpdated = true;
-    }
-    if (email && email !== user.email) {
-      user.email = email;
-      isUpdated = true;
-    }
-    if (mobileNumber && mobileNumber !== user.mobileNumber) {
-      user.mobileNumber = mobileNumber;
-      isUpdated = true;
-    }
-    if (gender && gender !== user.gender) {
-      user.gender = gender;
-      isUpdated = true;
-    }
-
-    // Handle password update if a new password is provided
-    if (newPassword) {
-      if (!currentPassword) {
-        return res
-          .status(400)
-          .json({ message: "Current password is required to update password" });
-      }
-
-      // Verify the current password
-      const isPasswordMatch = await bcrypt.compare(
-        currentPassword,
-        user.password
-      );
-      if (!isPasswordMatch) {
-        return res.status(400).json({ message: "Incorrect current password" });
-      }
-
-      // Ensure new password matches confirm password
-      if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: "New passwords do not match" });
-      }
-
-      // Hash and set the new password
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(newPassword, salt);
-      isUpdated = true;
-    }
-
-    // Save updated user information if changes were made
-    if (isUpdated) {
-      await user.save();
-    } else {
-      return res.status(400).json({ message: "No changes to update" });
-    }
-
-    return res.status(200).json({ message: "Profile updated successfully" });
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      data: userData,
+    });
   } catch (error) {
     console.error("Error during profile update:", error);
     return res.status(500).json({ message: "Server error" });
