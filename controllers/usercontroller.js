@@ -142,7 +142,7 @@ exports.updateProfile = async (req, res) => {
     if (username) updateFields.username = username;
     if (email) updateFields.email = email;
     if (mobileNumber) updateFields.mobileNumber = mobileNumber;
-    if(password) updateFields.password = password;
+    // if(password) updateFields.password = password;
     if (gender) updateFields.gender = gender;
 
     // If the password is provided, hash it before updating
@@ -154,8 +154,9 @@ exports.updateProfile = async (req, res) => {
     // Find the user by ID and update the fields
     const updatedUser = await User.findByIdAndUpdate(id, updateFields, {
       new: true,
+      runValidators: true,
     });
-
+   await updatedUser.save();
     // If no user is found, return 404
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
