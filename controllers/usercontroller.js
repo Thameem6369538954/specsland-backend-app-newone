@@ -135,21 +135,21 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Update other fields
+    // Update basic fields
     if (username) user.username = username;
     if (email) user.email = email;
     if (mobileNumber) user.mobileNumber = mobileNumber;
     if (gender) user.gender = gender;
 
-    // Check if the user is trying to update their password
+    // Password update logic
     if (password && newPassword) {
-      // 1. Compare the provided `password` with the user's current hashed password in the database
+      // Check if the provided `password` matches the user's current password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(400).json({ message: "Old password is incorrect" });
       }
 
-      // 2. Ensure the new password is different from the old one
+      // Check if the new password is different from the old one
       if (password === newPassword) {
         return res
           .status(400)
@@ -158,25 +158,26 @@ exports.updateProfile = async (req, res) => {
           });
       }
 
-      // 3. Hash the new password before saving it to the database
+      // Hash the new password and set it on the user
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(newPassword, salt);
     }
 
-    // Save the updated user
+    // Save the updated user to the database
     await user.save();
 
-    // Return updated user data, excluding the password
-    const { password: _, newPassword: __, ...userData } = user.toObject(); // Exclude password from response
-    return res.status(200).json({
+    // Exclude password from the response
+    const { password: _, newPassword: __, ...userData } = user.toObject();
+    res.status(200).json({
       message: "Profile updated successfully",
       data: userData,
     });
   } catch (error) {
     console.error("Error during profile update:", error);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 
