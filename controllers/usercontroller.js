@@ -126,41 +126,48 @@ exports.userlogout = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, email, password, confirmPassword, mobileNumber, gender } =
+    const { username, email, password, newPassword, mobileNumber, gender } =
       req.body;
 
-    console.log("ID:", req.params.id); // Log ID
-    console.log("Request Body:", req.body); // Log form data
-
-    // Check if the password and confirmPassword match
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
-    // Find the user by ID first
+    // Find the user by ID
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Prepare the updateFields object
+    // Update other fields
     if (username) user.username = username;
     if (email) user.email = email;
     if (mobileNumber) user.mobileNumber = mobileNumber;
     if (gender) user.gender = gender;
 
-    // If the password is provided, hash it before updating
-    if (password) {
-      const salt = await bcrypt.genSalt(10); // Generate salt
-      user.password = await bcrypt.hash(password, salt); // Hash the password
+    // Check if the user is trying to update their password
+    if (password && newPassword) {
+      // 1. Compare the provided `password` with the user's current hashed password in the database
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Old password is incorrect" });
+      }
+
+      // 2. Ensure the new password is different from the old one
+      if (password === newPassword) {
+        return res
+          .status(400)
+          .json({
+            message: "New password cannot be the same as the old password",
+          });
+      }
+
+      // 3. Hash the new password before saving it to the database
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
     }
 
     // Save the updated user
-    await user.save(); // This will trigger the password hashing if modified
+    await user.save();
 
-    // Return the updated user (excluding the password)
-    const { password: _, ...userData } = user.toObject(); // Remove the password from the response
-
+    // Return updated user data, excluding the password
+    const { password: _, newPassword: __, ...userData } = user.toObject(); // Exclude password from response
     return res.status(200).json({
       message: "Profile updated successfully",
       data: userData,
@@ -170,6 +177,7 @@ exports.updateProfile = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 
