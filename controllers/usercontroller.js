@@ -140,10 +140,10 @@ exports.updateProfile = async (req, res) => {
       console.log("Provided current password:", password);
       console.log("Stored hashed password:", user.password);
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Old password is incorrect" });
-      }
+      // const isMatch = await bcrypt.compare(password, user.password);
+      // if (!isMatch) {
+      //   return res.status(400).json({ message: "Old password is incorrect" });
+      // }
 
       // Ensure new password is different from the current password
       const isNewSameAsOld = await bcrypt.compare(newPassword, user.password);
