@@ -126,7 +126,7 @@ exports.userlogout = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, email, password, newPassword, mobileNumber, gender } =
+    const { username, email, mobileNumber, gender } =
       req.body;
 
     // Find the user by ID
@@ -136,38 +136,19 @@ exports.updateProfile = async (req, res) => {
     }
 
     // Check current password
-    if (password && newPassword) {
-      console.log("Provided current password:", password);
-      console.log("Stored hashed password:", user.password);
-
-      // const isMatch = await bcrypt.compare(password, user.password);
-      // if (!isMatch) {
-      //   return res.status(400).json({ message: "Old password is incorrect" });
-      // }
-
-      // Ensure new password is different from the current password
-      const isNewSameAsOld = await bcrypt.compare(newPassword, user.password);
-      if (isNewSameAsOld) {
-        return res.status(400).json({
-          message: "New password cannot be the same as the old password",
-        });
-      }
-
-      // Hash and set the new password
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(newPassword, salt);
-    }
+   
 
     // Update other fields
     if (username) user.username = username;
     if (email) user.email = email;
     if (mobileNumber) user.mobileNumber = mobileNumber;
     if (gender) user.gender = gender;
+  
 
     // Save the updated user to the database
     await user.save();
 
-    const { password: _, ...userData } = user.toObject();
+    const { ...userData } = user.toObject();
     res.status(200).json({
       message: "Profile updated successfully",
       data: userData,
