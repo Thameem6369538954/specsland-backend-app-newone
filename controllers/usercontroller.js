@@ -135,39 +135,39 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Update basic fields
-    if (username) user.username = username;
-    if (email) user.email = email;
-    if (mobileNumber) user.mobileNumber = mobileNumber;
-    if (gender) user.gender = gender;
-
-    // Password update logic
+    // Check current password
     if (password && newPassword) {
-      // Check if the provided `password` matches the user's current password
+      console.log("Provided current password:", password);
+      console.log("Stored hashed password:", user.password);
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(400).json({ message: "Old password is incorrect" });
       }
 
-      // Check if the new password is different from the old one
-      if (password === newPassword) {
-        return res
-          .status(400)
-          .json({
-            message: "New password cannot be the same as the old password",
-          });
+      // Ensure new password is different from the current password
+      const isNewSameAsOld = await bcrypt.compare(newPassword, user.password);
+      if (isNewSameAsOld) {
+        return res.status(400).json({
+          message: "New password cannot be the same as the old password",
+        });
       }
 
-      // Hash the new password and set it on the user
+      // Hash and set the new password
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(newPassword, salt);
     }
 
+    // Update other fields
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (mobileNumber) user.mobileNumber = mobileNumber;
+    if (gender) user.gender = gender;
+
     // Save the updated user to the database
     await user.save();
 
-    // Exclude password from the response
-    const { password: _, newPassword: __, ...userData } = user.toObject();
+    const { password: _, ...userData } = user.toObject();
     res.status(200).json({
       message: "Profile updated successfully",
       data: userData,
@@ -177,6 +177,7 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 
