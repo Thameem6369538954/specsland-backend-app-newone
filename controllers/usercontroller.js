@@ -1,6 +1,9 @@
 const User = require("../Models/Usermodels.js");
 const bcrypt = require("bcryptjs");
 const gentrateToken = require("../Utils/gentrateToken.js");
+const { putObjectCommand } = require("../Aws/s3Client.js");
+const multer = require("multer");
+const s3 = require("../Aws/s3Client.js");
 
 exports.getUser = async (req, res) => {
   try {
@@ -123,6 +126,7 @@ exports.userlogout = async (req, res) => {
   }
 };
 
+
 exports.updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -158,6 +162,58 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Add this method to handle uploading the user's profile image
+exports.uploadProfileImage = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the user ID from the URL
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if a file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // The file from the request (e.g., image) is available in req.file
+    const file = req.file;
+
+    // Create a unique file name to avoid overwriting
+    const fileName = `profile-${id}-${Date.now()}.jpg`; // Modify this based on the desired file format
+
+    // Set up S3 upload parameters
+    const fileParams = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME, // Your S3 bucket name
+      Key: fileName, // The name of the file in S3
+      Body: file.buffer, // The file content (buffer)
+      ContentType: file.mimetype, // The MIME type of the file
+    };
+
+    // Upload the file to AWS S3
+    const uploadResult = await s3.send(new PutObjectCommand(fileParams));
+
+    // Get the URL of the uploaded image
+    const imageUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+
+    // Update the user's profile with the image URL
+    user.profileImage = imageUrl;
+
+    // Save the updated user profile
+    await user.save();
+
+    // Send the updated profile with the new image URL
+    res.status(200).json({
+      message: "Profile image uploaded successfully",
+      profileImage: user.profileImage, // Send the new image URL back
+    });
+  } catch (error) {
+    console.error("Error during profile image upload:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 
 
