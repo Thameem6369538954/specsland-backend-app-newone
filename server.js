@@ -35,5 +35,5 @@ app.use("/api/v1/", user);
 
 connectDb();
 app.listen(process.env.PORT, () => {
-    console.log(`Server running on port this server ${process.env.PORT} in ${process.env.NODE_ENV} mode`);
+    console.log(`Server running on port this server onnnnnnnnnn ${process.env.PORT} in ${process.env.NODE_ENV} mode`);
 });
