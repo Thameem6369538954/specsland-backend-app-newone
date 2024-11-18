@@ -8,6 +8,8 @@ const cors = require('cors')
 confiq.config({ path: path.join(__dirname, 'Config/config.env'),});
 const cookieParser = require("cookie-parser");
 
+require("dotenv").config();
+
 
 app.use(cookieParser());
 app.use(express.json());
