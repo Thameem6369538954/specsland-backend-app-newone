@@ -15,11 +15,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173",
-       "https://specsland-app.vercel.app"],
-
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    credentials: true, // Allow cookies if needed
+    origin: ["http://localhost:5173", "https://specsland-app.vercel.app"],  // Allow localhost and production URLs
+    methods: ["GET", "POST", "PUT", "DELETE"],  // Allowed methods
+    credentials: true,  // Allow cookies or credentials
+    allowedHeaders: ["Content-Type", "Authorization"],  // Add this to specify allowed headers
   })
 );
 
