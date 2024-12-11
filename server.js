@@ -8,7 +8,8 @@ const cors = require('cors')
 confiq.config({ path: path.join(__dirname, 'Config/config.env'),});
 const cookieParser = require("cookie-parser");
 
-require("dotenv").config();
+// require("dotenv").config();
+console.log("MongoDB URL:", process.env.DB_LOCAL_URL);
 
 
 app.use(cookieParser());
