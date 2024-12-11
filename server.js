@@ -12,13 +12,14 @@ require("dotenv").config();
 
 
 app.use(cookieParser());
+app.options('*', cors());  // Enable CORS for all preflight requests
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://specsland-app.vercel.app"],  // Allow localhost and production URLs
-    methods: ["GET", "POST", "PUT", "DELETE"],  // Allowed methods
-    credentials: true,  // Allow cookies or credentials
-    allowedHeaders: ["Content-Type", "Authorization"],  // Add this to specify allowed headers
+    origin: ["http://localhost:5173", "https://specsland-app.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
