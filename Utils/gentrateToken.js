@@ -1,6 +1,9 @@
 const JWT = require("jsonwebtoken");
 
 const generateToken = (id, statusCode, res) => {
+  // Log the JWT_SECRET for debugging (make sure not to do this in production)
+  console.log("jwt", process.env.JWT_SECRET);
+
   // Create the JWT token
   const token = JWT.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "1d", // Token expires in 1 day
@@ -14,9 +17,7 @@ const generateToken = (id, statusCode, res) => {
     secure: process.env.NODE_ENV === "development" ? false : true, // Only send cookie over HTTPS in production
   });
 
-  // Send a response (success message)
-
-
+  // Send the response
   return token;
 };
 
