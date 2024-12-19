@@ -10,12 +10,14 @@ const generateToken = (id, statusCode, res) => {
   });
 
   // Set the token in an HttpOnly cookie
-  res.cookie("jwt", token, {
-    maxAge: 24 * 60 * 60 * 1000, // Cookie expires in 1 day
-    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-    sameSite: "none", // Necessary for cross-origin requests
-    secure: process.env.NODE_ENV === "development" ? false : true, // Only send cookie over HTTPS in production
-  });
+ // When sending the JWT cookie (during login or after some other action):
+res.cookie('token', jwtToken, {
+  httpOnly: true,        // Ensures the cookie is not accessible via JavaScript
+  secure: true,          // Ensure it is sent only over HTTPS (important in production)
+  sameSite: 'None',      // Required for cross-origin cookies
+  maxAge: 24 * 60 * 60 * 1000, // Set the expiration time to 1 day (24 hours)
+});
+
 
   // Send the response
   return token;
