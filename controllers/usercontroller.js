@@ -129,46 +129,43 @@ exports.userlogout = async (req, res) => {
 };
 
 
+// Add this method to handle uploading the user's profile image
+
 exports.updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
     const { username, email, mobileNumber, gender } =
-      req.body;
+req.body;
 
-    // Find the user by ID
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+// Find the user by ID
+const user = await User.findById(id);
+if (!user) {
+  return res.status(404).json({ message: "User not found" });
+}
 
-    // Check current password
-   
+// Check current password
 
-    // Update other fields
-    if (username) user.username = username;
-    if (email) user.email = email;
-    if (mobileNumber) user.mobileNumber = mobileNumber;
-    if (gender) user.gender = gender;
-  
 
-    // Save the updated user to the database
-    await user.save();
+// Update other fields
+if (username) user.username = username;
+if (email) user.email = email;
+if (mobileNumber) user.mobileNumber = mobileNumber;
+if (gender) user.gender = gender;
 
-    const { ...userData } = user.toObject();
-    res.status(200).json({
-      message: "Profile updated successfully",
-      data: userData,
-    });
-  } catch (error) {
-    console.error("Error during profile update:", error);
-    res.status(500).json({ message: "Server error" });
-  }
+
+// Save the updated user to the database
+await user.save();
+
+const { ...userData } = user.toObject();
+res.status(200).json({
+  message: "Profile updated successfully",
+  data: userData,
+});
+} catch (error) {
+console.error("Error during profile update:", error);
+res.status(500).json({ message: "Server error" });
+}
 };
-
-// Add this method to handle uploading the user's profile image
-
-
-
 
 exports.uploadProfileImage = async (req, res) => {
   try {
