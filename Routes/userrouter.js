@@ -8,7 +8,8 @@ const {
   updateProfile,
   uploadProfileImage,
 } = require("../controllers/usercontroller");
-console.log('updateProfile:', uploadProfileImage);
+
+console.log('userlogout :', userlogout);
 
 
 
