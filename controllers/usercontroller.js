@@ -20,25 +20,13 @@ exports.getUser = async (req, res) => {
   }
 };
 
+
+
 exports.createUser = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
-
-  if (token) {
-    try {
-      // Verify the token (Optional: Use this logic if you're checking token validity)
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Decoding the token
-      console.log("Decoded token:", decoded); // Contains the user info or payload
-    } catch (error) {
-      return res.status(401).json({ success: false, message: "Invalid token" });
-    }
-  } else {
-    console.log("No JWT token provided in the request");
-  }
-
   const { username, email, password, confrimPassword, mobileNumber } = req.body;
 
-  if (!password) {
-    return res.status(400).json({ error: "Password is required" });
+  if (!password || !confrimPassword) {
+    return res.status(400).json({ error: "Password and confirm password are required" });
   }
 
   if (password !== confrimPassword) {
@@ -46,23 +34,19 @@ exports.createUser = async (req, res) => {
   }
 
   try {
-    // Check if user email or username already exists
-    const userMailexist = await User.findOne({ email });
-    const userNameexist = await User.findOne({ username });
-
-    if (userMailexist || userNameexist) {
-      return res.status(400).json({
-        success: false,
-        message: "Email or Username already exists",
-      });
+    // Check if the user already exists
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ error: "User with this email already exists" });
     }
 
     // Hash the password
+    const bcrypt = require("bcryptjs");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user
-    const newUser = new User({
+    // Create a new user
+    const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
@@ -70,29 +54,25 @@ exports.createUser = async (req, res) => {
       mobileNumber,
     });
 
-    console.log(newUser);
-
-    // Save the new user to the database
-    await newUser.save();
-
-    // Generate token and send response
-    const tokenGenerated = gentrateToken(newUser._id, 201, res);
+    // Generate a token for the user
+    const token = gentrateToken(newUser._id);
 
     res.status(201).json({
       success: true,
-      data: newUser,
-      message: "User Registered successfully",
-      token: tokenGenerated,
+      message: "User registered successfully",
+      token,
+      data: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      },
     });
-
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    console.error("Error registering user:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 
 
