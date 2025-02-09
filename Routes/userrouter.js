@@ -7,6 +7,7 @@ const {
   userlogout,
   updateProfile,
   uploadProfileImage,
+  uploadFile
 } = require("../controllers/usercontroller");
 
 console.log('userlogout :', userlogout);
@@ -14,6 +15,7 @@ console.log('userlogout :', userlogout);
 
 
 router.route("/userRegister").post(createUser);
+router.route("/file").post(uploadFile);
 router.route("/getUser").get(getUser);
 router.route("/login").post(loginUser);
 router.route("/profileUpdate/:id").put(uploadProfileImage);

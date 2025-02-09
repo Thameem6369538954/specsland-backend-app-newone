@@ -1,11 +1,42 @@
 const User = require("../Models/Usermodels.js");
 const bcrypt = require("bcryptjs");
 const gentrateToken = require("../Utils/gentrateToken.js");
-const { putObjectCommand } = require("../Aws/s3Client.js");
-const { uploadFileToS3 } = require('../Config/fileUploadService.js');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const s3 = require('../Config/awsConfig.js');
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const multer = require("multer");
+const s3 = require("../Config/awsConfig.js")
+const fs = require("fs");
+
+
+exports.uploadFile = async (req, res) => {
+  try {
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ message: "No file provided" });
+    }
+
+    const uploadParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: file.originalname,
+      Body: fs.createReadStream(file.path),
+      ContentType: file.mimetype,
+    };
+
+    const result = await s3.upload(uploadParams).promise();
+
+    const newFile = new File({
+      fileName: file.originalname,
+      fileUrl: result.Location,
+    });
+
+    await newFile.save();
+
+    res.status(201).json({ message: "File uploaded successfully", file: newFile });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error uploading file" });
+  }
+};
 
 exports.getUser = async (req, res) => {
   try {
